@@ -1,0 +1,32 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend logic for Portfolio",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix integrify-gallery-front-end && npm run build --prefix integrify-gallery-front-end"
+  },
+  "engines": {
+    "node": "8.5.0"
+  },
+  "keywords": [
+    "node",
+    "express"
+  ],
+  "author": "Jaya Kumar Bidari",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cloudinary": "^1.11.0",
+    "exif": "^0.6.0",
+    "express": "^4.16.3",
+    "mongoose": "^5.4.19",
+    "multer": "^1.3.1",
+    "sharp": "^0.22.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}
