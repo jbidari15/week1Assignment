@@ -128,5 +128,14 @@ router.delete("/:studentId", (req, res) => {
       res.send(err);
     });
 });
+router.get("/:title", (req, res) => {
+  db.Student.find({ title: req.params.title })
+    .then(students => {
+      res.json(students);
+    })
+    .catch(err => {
+      res.send(err);
+    });
+});
 
 module.exports = router;
