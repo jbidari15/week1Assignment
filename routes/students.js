@@ -38,6 +38,13 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", upload.single("src"), (req, res) => {
+  const gpsToDecimal = (gpsData, hem) => {
+    let d =
+      parseFloat(gpsData[0]) +
+      parseFloat(gpsData[1] / 60) +
+      parseFloat(gpsData[2] / 3600);
+    return hem === "S" || hem === "W" ? (d *= -1) : d;
+  };
   cloudinary.uploader.upload(req.file.path, function(result) {
     try {
       new ExifImage({ image: req.file.path }, function(error, exifData) {
@@ -46,7 +53,14 @@ router.post("/", upload.single("src"), (req, res) => {
           const formData = {
             ...req.body,
             src: result.secure_url,
-            imageData: exifData
+            lat: gpsToDecimal(
+              exifData.gps.GPSLatitude,
+              exifData.gps.GPSLatitudeRef
+            ),
+            lng: gpsToDecimal(
+              exifData.gps.GPSLongitude,
+              exifData.gps.GPSLongitudeRef
+            )
           };
           db.Student.create(formData)
             .then(student => {
@@ -61,6 +75,58 @@ router.post("/", upload.single("src"), (req, res) => {
       console.log("Error: " + error.message);
     }
   });
+});
+
+router.put("/:studentId", upload.single("src"), (req, res) => {
+  const gpsToDecimal = (gpsData, hem) => {
+    let d =
+      parseFloat(gpsData[0]) +
+      parseFloat(gpsData[1] / 60) +
+      parseFloat(gpsData[2] / 3600);
+    return hem === "S" || hem === "W" ? (d *= -1) : d;
+  };
+  cloudinary.uploader.upload(req.file.path, function(result) {
+    try {
+      new ExifImage({ image: req.file.path }, function(error, exifData) {
+        if (error) console.log("Error: " + error.message);
+        else {
+          const formData = {
+            ...req.body,
+            src: result.secure_url,
+            lat: gpsToDecimal(
+              exifData.gps.GPSLatitude,
+              exifData.gps.GPSLatitudeRef
+            ),
+            lng: gpsToDecimal(
+              exifData.gps.GPSLongitude,
+              exifData.gps.GPSLongitudeRef
+            )
+          };
+          db.Student.findOneAndUpdate({ _id: req.params.studentId }, formData, {
+            new: true
+          })
+            .then(updatedStudent => {
+              res.json(updatedStudent);
+            })
+            .catch(err => {
+              res.send(err);
+            });
+        }
+      });
+    } catch (error) {
+      console.log("Error: " + error.message);
+    }
+  });
+});
+
+router.delete("/:studentId", (req, res) => {
+  db.Student.remove({ _id: req.params.studentId })
+    .then(() => {
+      res.send({ message: "The student is deleted from the database" });
+    })
+    .catch(err => {
+      res.send(err);
+    });
 });
 
 module.exports = router;

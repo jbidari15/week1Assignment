@@ -29,8 +29,16 @@ class SingleStudent extends Component {
     }));
   };
   render() {
-    const { title, category, description, src, _id } = this.props.eachStudent;
-
+    const {
+      title,
+      category,
+      description,
+      src,
+      _id,
+      lat,
+      lng
+    } = this.props.eachStudent;
+    const mapLocation = `http://maps.google.com/maps?q=${lat}, ${lng}&z=15&output=embed`;
     return (
       <div>
         {this.state.modal ? (
@@ -45,11 +53,12 @@ class SingleStudent extends Component {
                 <Card>
                   <div className="map">
                     <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15855.442357983791!2d24.802977009256683!3d60.214984164714345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x468df67f5517aac9%3A0xa00b553b98e2b00!2sLepp%C3%A4vaara!5e0!3m2!1sen!2sfi!4v1553246076216"
-                      width="200"
-                      height="200"
-                      frameborder="0"
-                      allowfullscreen
+                      src={mapLocation}
+                      style={{
+                        scrolling: "no",
+                        marginheight: "0",
+                        marginwidth: "0"
+                      }}
                     />
                   </div>
                   <CardImg top width="100%" src={src} alt="image" />

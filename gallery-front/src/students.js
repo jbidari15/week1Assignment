@@ -43,6 +43,7 @@ class Students extends Component {
   };
 
   render() {
+    console.log(this.state.students);
     const allStudents = this.state.students.map(eachStudent => (
       <SingleStudent
         key={eachStudent._id}

@@ -9,7 +9,8 @@ const studentSchema = new mongoose.Schema({
     required: true
   },
   alt: String,
-  imageData: Object,
+  lat: Number,
+  lng: Number,
   date: {
     type: Date,
     default: Date.now
