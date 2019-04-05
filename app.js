@@ -2,10 +2,14 @@ const express = require("express"),
   app = express(),
   https = require("https"),
   fs = require("fs");
+const users = require("./routes/users");
+const passport = require("passport");
+const helmet = require("helmet");
 // (port = process.env.PORT || 3001),
 bodyParser = require("body-parser");
 path = require("path");
 
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
@@ -38,8 +42,12 @@ app.use((req, res, next) => {
   }
 });
 
+app.use(passport.initialize());
+require("./config/passport")(passport);
+
 const studentRoutes = require("./routes/students.js");
 app.use("/api/students", studentRoutes);
+app.use("/api/users", users);
 
 if (process.env.NODE_ENV === "production") {
   //set static folder
@@ -50,7 +58,3 @@ if (process.env.NODE_ENV === "production") {
     );
   });
 }
-
-// app.listen(port, (req, res) => {
-//   console.log(`The server is running at port - ${port}`);
-// });

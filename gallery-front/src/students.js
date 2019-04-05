@@ -5,8 +5,32 @@ import NavBar from "./navbar";
 import AddStudent from "./AddStudent";
 import AllStudents from "./allStudents";
 import { Route, Switch, Redirect } from "react-router-dom";
+import setAuthToken from "./utils/setAuthToken";
+import jwt_decode from "jwt-decode";
+import axios from "axios";
 
 const ApiUrl = "/api/students";
+
+//checking token
+if (localStorage.jwtToken) {
+  //set token in header authorization
+  setAuthToken(localStorage.jwtToken);
+  //Decode the token and get user info
+  const decoded = jwt_decode(localStorage.jwtToken);
+  //set user and is Authenticated
+  store.dispatch(setCurrentUser(decoded));
+  //check for expired token
+  const currentTime = Date.now() / 1000;
+  if (decoded.exp < currentTime) {
+    //Logout user
+    store.dispatch(logoutUser());
+    //Clear the current profile
+    store.dispatch(clearCurrentProfile());
+
+    //Redirect to Login
+    window.location.href = "/login";
+  }
+}
 
 class Students extends Component {
   constructor(props) {
@@ -19,7 +43,8 @@ class Students extends Component {
     this.loadStudents();
   }
   loadStudents() {
-    fetch(ApiUrl)
+    axios
+      .arguments(ApiUrl)
       .then(res => res.json())
       .then(myJson => this.setState({ students: myJson }));
   }
@@ -32,8 +57,9 @@ class Students extends Component {
       formData.append(item, val[item]);
     }
 
-    fetch(ApiUrl, {
+    axios({
       method: "POST",
+      url: ApiUrl,
       body: formData
     })
       .then(response => response.json())
@@ -55,17 +81,6 @@ class Students extends Component {
       <div className="mainComponentWrapper">
         <div className="mainComponent">
           <NavBar />
-          {/* <div>
-            <iframe
-              width="600"
-              height="450"
-              frameborder="0"
-              src="https://www.google.com/maps/embed/v1/undefined?origin=...&q=...&destination=...&center=...&zoom=...&key=..."
-              allowfullscreen
-            />
-
-          </div> */}
-
           <Switch>
             <Route
               exact
